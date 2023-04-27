@@ -17,36 +17,30 @@ url: "https://apod.nasa.gov/apod/image/2304/MoonArc_zanarello_960.jpg"-->
 
 const APIKey = 'zCqY9bMgztIgheNAjZx0JNy5kHkchKU46GdKbd1H'
 document.querySelector('button').addEventListener('click', getFetch)
+const imageURL = 'https://epic.gsfc.nasa.gov/archive/natural/'
+const imageHighRes = 'png/'
+const imageLowRes = 'jpg/'
+const imageThumbs = 'thumbs/'
+let url = ''
 
 function getFetch(){
   const picDate = document.querySelector('input').value
-  const url = `https://api.nasa.gov/EPIC/api/natural/images?api_key=${APIKey}&date=${picDate}`
+  let createSection = ''  
+  picDate == '' ? url = `https://api.nasa.gov/EPIC/api/natural/images?api_key=${APIKey}` :
+                  url = `https://api.nasa.gov/EPIC/api/natural/date/${picDate}?api_key=${APIKey}`;
 
   fetch(url)
       .then(res => res.json()) // parse response as JSON
       .then(data => {
-/*        document.querySelector("h2").innerText = data.title
-        let media = data.media_type
-        let copyright = ''
-        let dateArr = data.date.split("-")
-        let datePub = `${dateArr[1]}/${dateArr[2]}/${dateArr[0]}`
-          if (data.copyright == null && data.copyright == undefined) {
-          copyright = "Public Domain"
-        } else {
-          copyright = data.copyright
-        }
-        document.querySelector("#copyright").innerHTML = copyright
-        document.querySelector("#datePub").innerHTML = datePub
-        document.querySelector("p").innerHTML = data.explanation
-        if (media === 'video') {
-          document.querySelector("#image").style.display = "none"
-          document.querySelector("#video").style.display = "block"
-          document.querySelector("#video").src = data.url
-        } else {
-          document.querySelector("#video").style.display = "none"
-          document.querySelector("#image").style.display = "block"
-          document.querySelector("#image").src = data.url
-        } */
+        Object.keys(data).forEach(key => {
+          let pubDate = data[key].date
+          pubDate = pubDate.substring(0,5) + pubDate.substring(5,8) + pubDate.substring(8,10) + pubDate.substring(4,5)
+          pubDate = pubDate.replaceAll("-","/")
+          // Modify DOM with picture section
+          createSection += `<div><img class="low-res-images" src="${imageURL}${pubDate}/${imageLowRes}${data[key].image}.jpg" alt="Earth picture">
+          </div>`
+          document.querySelector(".grid-pictures").innerHTML = createSection
+        })
         console.log(data)
       })
       .catch(err => {
